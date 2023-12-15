@@ -46,27 +46,32 @@ public class TelegramBot extends TelegramLongPollingBot {
             // Извлекаем аргументы команды из текста сообщения
             List<String> args = TelegramBotUtil.extractCommand(text);
             String commandKey = args.get(0);
+            SendMessage sendMessage;
 
             // Определяем, какая команда вызвана
             BotCommand command = TelegramBotUtil.determineCommand(commandKey, commandMap);
 
+
+
             // Если команда найдена, выполняем её
             if (command != null) {
-                String response = command.execute(args, chatId);
-                SendMessage sendMessage = TelegramBotUtil.createMessage(chatId, response);
-                try {
-                    execute(sendMessage); // Отправляем ответ пользователю
-                } catch (TelegramApiException e) {
-                    e.printStackTrace();
+                // Для команды старт
+                if(command.getCommandIdentifier().equals("/start")){
+                    sendMessage = TelegramBotUtil.createMessage(chatId, "Приветствую, "+ message.getFrom().getFirstName()+", введите /help для информации о командах");
+                // Для всех остальных
+                }else {
+                    String response = command.execute(args, chatId);
+                    sendMessage = TelegramBotUtil.createMessage(chatId, response);
                 }
-            } else {
+            }
+            else {
                 // Если команда не найдена, отправляем сообщение об ошибке
-                SendMessage sendMessage = TelegramBotUtil.createMessage(chatId, "Неизвестная команда: " + commandKey);
-                try {
-                    execute(sendMessage); // Отправляем сообщение о неизвестной команде
-                } catch (TelegramApiException e) {
-                    e.printStackTrace();
-                }
+                sendMessage = TelegramBotUtil.createMessage(chatId, "Неизвестная команда: " + commandKey);
+            }
+            try {
+                execute(sendMessage); // Отправляем ответ пользователю
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
             }
         }
     }
