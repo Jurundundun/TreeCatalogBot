@@ -1,0 +1,11 @@
+# Устанавливаем базовый образ
+FROM openjdk:21-jre-slim
+
+# Устанавливаем рабочую директорию внутри контейнера
+WORKDIR /app
+
+# Копируем JAR файл приложения в контейнер
+COPY target/your-application.jar /app/your-application.jar
+
+# Команда для запуска приложения (указать имя JAR файла вашего приложения)
+CMD ["java", "-jar", "your-application.jar"]
